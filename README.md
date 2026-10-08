@@ -73,12 +73,7 @@ More features and improvements are planned as development continues.
 
 ---
 
-## 👨‍💻 Developer
 
-**Raza**
-
-Software Engineering Student
-Backend Engineering & AI Enthusiast
 
 ---
 
