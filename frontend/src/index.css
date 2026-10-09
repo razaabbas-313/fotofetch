@@ -1,0 +1,135 @@
+@import "tailwindcss";
+
+/* FotoFetch design tokens: a photographer's light table.
+   table = the pale surface you lay contact sheets on
+   af    = autofocus-confirmed green (found / success / the main "find" action)
+   flash = amber used only while the camera is still hunting */
+@theme {
+  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --color-table: #e6ecef;
+  --color-paper: #f7f9fa;
+  --color-ink: #0f1b25;
+  --color-slate: #4f616d;
+  --color-line: #c7d2d9;
+  --color-af: #10b365;
+  --color-af-deep: #0b7a45;
+  --color-flash: #ffb81c;
+  --color-danger: #b3261e;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-table font-sans text-ink antialiased;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-stretch: 88%;
+    letter-spacing: -0.02em;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--color-af);
+    color: var(--color-ink);
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-md px-4 py-2.5 text-[15px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply bg-ink text-paper hover:bg-[#1f3345];
+  }
+  .btn-find {
+    @apply bg-af text-ink hover:bg-[#2fc77d];
+  }
+  .btn-ghost {
+    @apply border border-line bg-paper text-ink hover:border-ink;
+  }
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+
+  .label {
+    @apply mb-1.5 block text-sm font-medium;
+  }
+  .input {
+    @apply w-full rounded-md border border-line bg-paper px-3 py-2.5 text-[15px] text-ink placeholder:text-slate/70 focus:border-ink focus:outline-none focus-visible:outline-none;
+  }
+  .input:focus {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-af) 35%, transparent);
+  }
+
+  .panel {
+    @apply rounded-lg border border-line bg-paper;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-table px-2.5 py-0.5 text-xs font-medium text-slate;
+  }
+
+  /* Autofocus bracket: four corners drawn with borders. */
+  .af-corner {
+    position: absolute;
+    width: var(--af-size, 22px);
+    height: var(--af-size, 22px);
+    border: 0 solid var(--af-color, var(--color-af));
+    pointer-events: none;
+  }
+  .af-tl { top: 0; left: 0; border-top-width: 3px; border-left-width: 3px; }
+  .af-tr { top: 0; right: 0; border-top-width: 3px; border-right-width: 3px; }
+  .af-bl { bottom: 0; left: 0; border-bottom-width: 3px; border-left-width: 3px; }
+  .af-br { bottom: 0; right: 0; border-bottom-width: 3px; border-right-width: 3px; }
+}
+
+/* ---- Hero: the one orchestrated moment ----
+   The bracket hunts across the contact sheet in amber, then locks green on a match.
+   Final state is the base style, so reduced-motion users just see the locked result. */
+.hero-af {
+  position: absolute;
+  width: 25%;
+  height: 33.3333%;
+  left: 25%;
+  top: 33.3333%;
+  animation: af-seek 4.6s cubic-bezier(0.65, 0, 0.25, 1) 0.4s both;
+}
+.hero-af .af-corner {
+  --af-size: 26px;
+  animation: af-tint 4.6s linear 0.4s both;
+}
+.hero-match {
+  animation: af-pop 0.5s ease-out 4.5s both;
+}
+
+@keyframes af-seek {
+  0%   { left: 0%;  top: 0%; }
+  20%  { left: 50%; top: 0%; }
+  40%  { left: 75%; top: 33.3333%; }
+  60%  { left: 0%;  top: 66.6667%; }
+  80%  { left: 25%; top: 33.3333%; }
+  100% { left: 25%; top: 33.3333%; }
+}
+@keyframes af-tint {
+  0%, 78% { border-color: var(--color-flash); }
+  86%, 100% { border-color: var(--color-af); }
+}
+@keyframes af-pop {
+  from { opacity: 0; transform: scale(0.6); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-af,
+  .hero-af .af-corner,
+  .hero-match {
+    animation: none !important;
+  }
+}
